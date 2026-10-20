@@ -1,0 +1,335 @@
+import type { Cafe } from '../types'
+
+// 30 suggested cafés (checked Oct 2026). Coordinates are approximate.
+export const CAFES: Cafe[] = [
+  {
+    "id": "la-cabra-east-village",
+    "name": "La Cabra",
+    "neighborhood": "East Village",
+    "borough": "Manhattan",
+    "address": "152 2nd Ave, New York, NY 10003",
+    "mustTry": "Filter coffee + cardamom bun",
+    "why": "Danish roaster with Nordic-minimal calm and the city's most coveted cardamom buns.",
+    "lat": 40.729,
+    "lng": -73.987
+  },
+  {
+    "id": "abraco",
+    "name": "Abraço",
+    "neighborhood": "East Village",
+    "borough": "Manhattan",
+    "address": "81 E 7th St, New York, NY 10003",
+    "mustTry": "Cortado with olive oil cake",
+    "why": "Tiny, beloved since 2007: house-roasted espresso and a legendary olive oil cake.",
+    "lat": 40.727,
+    "lng": -73.987
+  },
+  {
+    "id": "caffe-reggio",
+    "name": "Caffe Reggio",
+    "neighborhood": "Greenwich Village",
+    "borough": "Manhattan",
+    "address": "119 MacDougal St, New York, NY 10012",
+    "mustTry": "The original cappuccino",
+    "why": "1927 Village landmark said to have served America's first cappuccino; pure old-world romance.",
+    "lat": 40.73,
+    "lng": -74
+  },
+  {
+    "id": "coffee-project-ny",
+    "name": "Coffee Project New York",
+    "neighborhood": "East Village",
+    "borough": "Manhattan",
+    "address": "239 E 5th St, New York, NY 10003",
+    "mustTry": "Deconstructed Latte",
+    "why": "Playful, nerdy coffee lab; the three-glass deconstructed latte is a must-share.",
+    "lat": 40.727,
+    "lng": -73.989
+  },
+  {
+    "id": "felix-roasting-co",
+    "name": "Felix Roasting Co.",
+    "neighborhood": "NoMad",
+    "borough": "Manhattan",
+    "address": "450 Park Ave S, New York, NY 10016",
+    "mustTry": "S'mores latte",
+    "why": "Jewel-box, Ken Fulk-designed original café; maybe the most opulent coffee bar in town.",
+    "lat": 40.745,
+    "lng": -73.983
+  },
+  {
+    "id": "watchhouse-chrysler",
+    "name": "WatchHouse Chrysler Building",
+    "neighborhood": "Midtown East",
+    "borough": "Manhattan",
+    "address": "405 Lexington Ave, New York, NY 10174",
+    "mustTry": "Flat white",
+    "why": "London roaster's Art Deco café inside the Chrysler Building; coffee with a landmark view.",
+    "lat": 40.752,
+    "lng": -73.976
+  },
+  {
+    "id": "cafe-integral",
+    "name": "Café Integral",
+    "neighborhood": "Nolita",
+    "borough": "Manhattan",
+    "address": "149 Elizabeth St, New York, NY 10012",
+    "mustTry": "Nicaraguan cortado",
+    "why": "Petite Nolita bar pouring only family-sourced Nicaraguan coffee; perfect pre-stroll stop.",
+    "lat": 40.721,
+    "lng": -73.994
+  },
+  {
+    "id": "ninth-street-espresso",
+    "name": "Ninth Street Espresso",
+    "neighborhood": "Alphabet City",
+    "borough": "Manhattan",
+    "address": "700 E 9th St, New York, NY 10009",
+    "mustTry": "Macchiato",
+    "why": "An East Village pioneer since 2001; no-frills, serious espresso the locals swear by.",
+    "lat": 40.725,
+    "lng": -73.978
+  },
+  {
+    "id": "the-elk",
+    "name": "The Elk",
+    "neighborhood": "West Village",
+    "borough": "Manhattan",
+    "address": "128 Charles St, New York, NY 10014",
+    "mustTry": "Oat latte + a fresh pastry",
+    "why": "Sunny, plant-filled West Village nook; the cutest coffee-and-breakfast date in town.",
+    "lat": 40.735,
+    "lng": -74.008
+  },
+  {
+    "id": "joe-coffee-waverly",
+    "name": "Joe Coffee (Waverly Place)",
+    "neighborhood": "Greenwich Village",
+    "borough": "Manhattan",
+    "address": "141 Waverly Pl, New York, NY 10014",
+    "mustTry": "Cappuccino on The Waverly espresso",
+    "why": "The original Joe on a leafy Village corner; where a beloved NYC roaster got its start.",
+    "lat": 40.733,
+    "lng": -74.001
+  },
+  {
+    "id": "bibble-and-sip",
+    "name": "Bibble & Sip",
+    "neighborhood": "Midtown West",
+    "borough": "Manhattan",
+    "address": "253 W 51st St, New York, NY 10019",
+    "mustTry": "Matcha latte + cream puff",
+    "why": "Whimsical Theater District bakery-café with standout pastries; ideal pre-show treat.",
+    "lat": 40.762,
+    "lng": -73.986
+  },
+  {
+    "id": "black-fox-coffee",
+    "name": "Black Fox Coffee",
+    "neighborhood": "Financial District",
+    "borough": "Manhattan",
+    "address": "70 Pine St, New York, NY 10005",
+    "mustTry": "Pour-over from the guest roaster",
+    "why": "Bright café in a 1930s Art Deco tower, rotating world-class roasters; FiDi's best cup.",
+    "lat": 40.707,
+    "lng": -74.008
+  },
+  {
+    "id": "after-eden",
+    "name": "After Eden",
+    "neighborhood": "Lower East Side",
+    "borough": "Manhattan",
+    "address": "162 Orchard St, New York, NY 10002",
+    "mustTry": "Vietnamese salted coffee",
+    "why": "New 2026 LES spot: Vietnamese phin coffee by day, cocktails by night. Great date stop.",
+    "lat": 40.721,
+    "lng": -73.989
+  },
+  {
+    "id": "kijitora-east-village",
+    "name": "Kijitora",
+    "neighborhood": "East Village",
+    "borough": "Manhattan",
+    "address": "534 E 14th St, New York, NY 10009",
+    "mustTry": "Matcha latte",
+    "why": "Cozy cat-themed Japanese café with standout matcha and shokupan grilled cheese.",
+    "lat": 40.731,
+    "lng": -73.98
+  },
+  {
+    "id": "sey-coffee",
+    "name": "Sey Coffee",
+    "neighborhood": "Bushwick",
+    "borough": "Brooklyn",
+    "address": "18 Grattan St, Brooklyn, NY 11206",
+    "mustTry": "Light-roast single-origin pour-over",
+    "why": "Skylit warehouse roastery that coffee nerds call one of America's best. A pilgrimage.",
+    "lat": 40.706,
+    "lng": -73.933
+  },
+  {
+    "id": "devocion-williamsburg",
+    "name": "Devoción",
+    "neighborhood": "Williamsburg",
+    "borough": "Brooklyn",
+    "address": "69 Grand St, Brooklyn, NY 11249",
+    "mustTry": "Farm-fresh Colombian cortado",
+    "why": "Greenhouse-like roastery with a living plant wall and beans fresh from Colombia.",
+    "lat": 40.717,
+    "lng": -73.965
+  },
+  {
+    "id": "variety-coffee-graham",
+    "name": "Variety Coffee Roasters",
+    "neighborhood": "East Williamsburg",
+    "borough": "Brooklyn",
+    "address": "368 Graham Ave, Brooklyn, NY 11211",
+    "mustTry": "Cold brew on the front bench",
+    "why": "The 2008 original under the old 'Cho's Variety' sign; prime Brooklyn people-watching.",
+    "lat": 40.715,
+    "lng": -73.944
+  },
+  {
+    "id": "cafe-grumpy-greenpoint",
+    "name": "Café Grumpy",
+    "neighborhood": "Greenpoint",
+    "borough": "Brooklyn",
+    "address": "193 Meserole Ave, Brooklyn, NY 11222",
+    "mustTry": "Heartbreaker espresso latte",
+    "why": "The 2005 Greenpoint original (yes, the one from 'Girls'); a sunny neighborhood classic.",
+    "lat": 40.728,
+    "lng": -73.951
+  },
+  {
+    "id": "stonefruit-espresso",
+    "name": "Stonefruit Espresso + Kitchen",
+    "neighborhood": "Bed-Stuy",
+    "borough": "Brooklyn",
+    "address": "1058 Bedford Ave, Brooklyn, NY 11216",
+    "mustTry": "House specialty latte",
+    "why": "Woman-owned Bed-Stuy gem with a garden patio, Counter Culture coffee and wholesome bowls.",
+    "lat": 40.687,
+    "lng": -73.954
+  },
+  {
+    "id": "lips-cafe",
+    "name": "Lips Cafe",
+    "neighborhood": "Flatbush",
+    "borough": "Brooklyn",
+    "address": "1412 Nostrand Ave, Brooklyn, NY 11226",
+    "mustTry": "Latte + Caribbean bites",
+    "why": "Art-filled Flatbush café mixing great coffee with Caribbean flavor; a Time Out top pick.",
+    "lat": 40.652,
+    "lng": -73.95
+  },
+  {
+    "id": "odd-fox-coffee",
+    "name": "Odd Fox Coffee",
+    "neighborhood": "Greenpoint",
+    "borough": "Brooklyn",
+    "address": "984 Manhattan Ave, Brooklyn, NY 11222",
+    "mustTry": "Iced mocha",
+    "why": "Fable-inspired Greenpoint hangout that feels like a café, not a coworking space.",
+    "lat": 40.732,
+    "lng": -73.955
+  },
+  {
+    "id": "qahwah-house-williamsburg",
+    "name": "Qahwah House",
+    "neighborhood": "Williamsburg",
+    "borough": "Brooklyn",
+    "address": "162 Bedford Ave, Brooklyn, NY 11249",
+    "mustTry": "Jubani coffee + honey cheese bread",
+    "why": "Eighth-generation Yemeni coffee family; spiced brews and late-night, warm hospitality.",
+    "lat": 40.719,
+    "lng": -73.957
+  },
+  {
+    "id": "usagi-dumbo",
+    "name": "Usagi",
+    "neighborhood": "DUMBO",
+    "borough": "Brooklyn",
+    "address": "163 Plymouth St, Brooklyn, NY 11201",
+    "mustTry": "Ippodo matcha latte",
+    "why": "Serene Japanese café, gallery and bookshop tucked in DUMBO's cobblestone streets.",
+    "lat": 40.704,
+    "lng": -73.987
+  },
+  {
+    "id": "cafe-regular-du-nord",
+    "name": "Café Regular du Nord",
+    "neighborhood": "Park Slope",
+    "borough": "Brooklyn",
+    "address": "158A Berkeley Pl, Brooklyn, NY 11217",
+    "mustTry": "Cappuccino with latte art",
+    "why": "Wood-paneled, chandeliered, laptop-free and very Parisian; a brownstone-block charmer.",
+    "lat": 40.676,
+    "lng": -73.975
+  },
+  {
+    "id": "sweetleaf-lic",
+    "name": "Sweetleaf",
+    "neighborhood": "Long Island City",
+    "borough": "Queens",
+    "address": "10-93 Jackson Ave, Long Island City, NY 11101",
+    "mustTry": "Rocket Fuel (maple-chicory cold brew)",
+    "why": "The original Sweetleaf: antique-filled café with a vinyl record room in back.",
+    "lat": 40.743,
+    "lng": -73.954
+  },
+  {
+    "id": "kinship-coffee-astoria",
+    "name": "Kinship Coffee",
+    "neighborhood": "Astoria",
+    "borough": "Queens",
+    "address": "30-05 Steinway St, Astoria, NY 11103",
+    "mustTry": "Maple brew",
+    "why": "Astoria's homegrown roaster since 2014; a warm, buzzing neighborhood favorite.",
+    "lat": 40.765,
+    "lng": -73.916
+  },
+  {
+    "id": "astoria-coffee",
+    "name": "Astoria Coffee",
+    "neighborhood": "Astoria",
+    "borough": "Queens",
+    "address": "30-04 30th St, Astoria, NY 11102",
+    "mustTry": "Pour-over from the rotating roaster",
+    "why": "Bright corner café run by a local couple, rotating great roasters from across the US.",
+    "lat": 40.767,
+    "lng": -73.921
+  },
+  {
+    "id": "mighty-oak-roasters",
+    "name": "Mighty Oak Roasters",
+    "neighborhood": "Astoria",
+    "borough": "Queens",
+    "address": "28-01 24th Ave, Astoria, NY 11102",
+    "mustTry": "Espresso from the wood-fired roast",
+    "why": "Rare wood-fired roaster-café near Astoria Park; smoky-sweet beans you won't find elsewhere.",
+    "lat": 40.774,
+    "lng": -73.916
+  },
+  {
+    "id": "clipper-coffee-city-island",
+    "name": "Clipper Coffee",
+    "neighborhood": "City Island",
+    "borough": "Bronx",
+    "address": "274 City Island Ave, Bronx, NY 10464",
+    "mustTry": "Latte with Bronx Roasting Co. beans",
+    "why": "Nautical, voted the Bronx's best coffeehouse 2025; pair it with a seaside City Island walk.",
+    "lat": 40.847,
+    "lng": -73.787
+  },
+  {
+    "id": "boogie-down-grind",
+    "name": "The Boogie Down Grind",
+    "neighborhood": "Hunts Point",
+    "borough": "Bronx",
+    "address": "868 Hunts Point Ave, Bronx, NY 10474",
+    "mustTry": "Latte (stay for open mic)",
+    "why": "Majora Carter's South Bronx café-bar and community hub with open mics and art shows.",
+    "lat": 40.82,
+    "lng": -73.891
+  }
+]
