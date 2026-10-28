@@ -12,5 +12,6 @@ const salt = randomBytes(16).toString('hex')
 const hash = `scrypt$${salt}$${scryptSync(pin, salt, 32).toString('hex')}`
 const q = (s) => "'" + s.replace(/'/g, "''") + "'"
 console.log(JSON.stringify({ passport: id, pin }))
-console.log(`insert into public.passport_users (id, name, pass_hash) values (${q(id)}, ${q(name)}, ${q(hash)})
-on conflict (id) do update set name = excluded.name, pass_hash = excluded.pass_hash;`)
+// The passport name starts as the id; the friend can change it later in Settings.
+console.log(`insert into public.passport_users (id, name, login, pass_hash) values (${q(id)}, ${q(name)}, ${q(id)}, ${q(hash)});
+-- fails if the name is already used, so an existing friend's PIN is never replaced by accident`)

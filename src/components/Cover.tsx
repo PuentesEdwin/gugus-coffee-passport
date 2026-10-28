@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import type { Settings } from '../types'
-import { login, photoSrc, readLook, rememberLook } from '../lib/storage'
+import { login, photoSrc, readLook, rememberLook, toLogin } from '../lib/storage'
 import { Emblem } from './art'
 
 export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { settings: Settings; needsPin: boolean; onUnlocked: () => void; onOpen: () => void }) {
@@ -19,7 +19,7 @@ export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { sett
   }
 
   async function submit(p = pin) {
-    const u = user.trim().toLowerCase()
+    const u = toLogin(user)
     if (!u) return setErr('Type your passport name first.')
     if (!p || busy) return
     setBusy(true)

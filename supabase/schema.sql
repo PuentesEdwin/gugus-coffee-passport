@@ -29,3 +29,14 @@ alter table public.passport_users enable row level security;
 alter table public.passport_entries add column if not exists passport_id text not null default 'gugus';
 alter table public.passport_entries drop constraint if exists passport_entries_pkey;
 alter table public.passport_entries add primary key (passport_id, id);
+
+-- Editable passport names (Oct 2026): "login" is what people type on the cover and can change in
+-- Settings; "id" never changes. The Gugus row has no hash: its PIN stays in PASSPORT_PIN.
+alter table public.passport_users add column if not exists login text;
+update public.passport_users set login = id where login is null;
+alter table public.passport_users alter column login set not null;
+alter table public.passport_users add constraint passport_users_login_key unique (login);
+alter table public.passport_users add constraint passport_users_login_check check (login ~ '^[a-z0-9-]{2,32}$');
+alter table public.passport_users alter column pass_hash drop not null;
+insert into public.passport_users (id, name, login, pass_hash) values ('gugus', 'The Gugus', 'gugus', null)
+on conflict (id) do nothing;

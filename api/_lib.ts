@@ -11,8 +11,11 @@ export const HOME = 'gugus'
 const COOKIE = 'cp_session'
 
 export interface Passport {
+  /** Internal and permanent: pages and photo folders hang off it. */
   id: string
   name: string
+  /** What people type on the cover to sign in; they can change it in Settings. */
+  login: string
 }
 
 export function cloudConfigured() {
@@ -32,7 +35,7 @@ const same = (x: string, y: string) => {
 }
 
 export const normUser = (u: unknown) => String(u ?? '').trim().toLowerCase()
-const validUser = (u: string) => /^[a-z0-9-]{2,32}$/.test(u)
+export const validLogin = (u: string) => /^[a-z0-9-]{2,32}$/.test(u)
 
 /** scrypt$<salt>$<hash>; the same format scripts/new-passport.mjs writes. */
 export function hashPin(pin: string) {
@@ -46,12 +49,26 @@ function pinMatchesHash(pin: string, stored: string) {
   return same(scryptSync(pin, salt, 32).toString('hex'), hash)
 }
 
+interface UserRow {
+  id: string
+  name: string
+  login: string
+  pass_hash: string | null
+}
+
 /** What a session is signed with: changing the PIN logs that passport's devices out. */
-async function credential(id: string): Promise<{ cred: string; name: string } | null> {
-  if (id === HOME) return process.env.PASSPORT_PIN ? { cred: process.env.PASSPORT_PIN, name: 'The Gugus' } : null
-  if (!validUser(id)) return null
-  const { data } = await db().from(USERS).select('name, pass_hash').eq('id', id).maybeSingle()
-  return data ? { cred: data.pass_hash, name: data.name } : null
+function credentialOf(id: string, row: UserRow | null): { cred: string; p: Passport } | null {
+  if (id === HOME) {
+    if (!process.env.PASSPORT_PIN) return null
+    return { cred: process.env.PASSPORT_PIN, p: { id, name: row?.name || 'The Gugus', login: row?.login || HOME } }
+  }
+  return row?.pass_hash ? { cred: row.pass_hash, p: { id, name: row.name, login: row.login } } : null
+}
+
+async function credential(id: string) {
+  if (!validLogin(id)) return null
+  const { data } = await db().from(USERS).select('id, name, login, pass_hash').eq('id', id).maybeSingle()
+  return credentialOf(id, (data as UserRow) || null)
 }
 
 function sign(id: string, cred: string) {
@@ -66,23 +83,45 @@ function legacyToken() {
 }
 
 export async function checkLogin(user: unknown, pin: unknown): Promise<Passport | null> {
-  const id = normUser(user)
+  const login = normUser(user)
   const p = String(pin ?? '')
-  if (!p) return null
-  const c = await credential(id)
+  if (!p || !validLogin(login)) return null
+  const { data } = await db().from(USERS).select('id, name, login, pass_hash').eq('login', login).maybeSingle()
+  const row = (data as UserRow) || null
+  if (!row) return null
+  const id = row.id
+  const c = credentialOf(id, row)
   if (!c) return null
   const ok = id === HOME ? same(p, c.cred) : pinMatchesHash(p, c.cred)
-  return ok ? { id, name: c.name } : null
+  return ok ? c.p : null
+}
+
+/** Changes the name typed on the cover; pages and photos don't move. */
+export async function changeLogin(p: Passport, wanted: unknown): Promise<'ok' | 'invalid' | 'taken'> {
+  const login = normUser(wanted)
+  if (!validLogin(login)) return 'invalid'
+  if (login === p.login) return 'ok'
+  if (p.id !== HOME && login === HOME) return 'taken'
+  const { data: other } = await db().from(USERS).select('id').eq('login', login).maybeSingle()
+  if (other && other.id !== p.id) return 'taken'
+  const users = db().from(USERS)
+  const { error } =
+    p.id === HOME
+      ? await users.upsert({ id: HOME, name: p.name, login, pass_hash: null }, { onConflict: 'id' })
+      : await users.update({ login }).eq('id', p.id)
+  if (error) return error.code === '23505' ? 'taken' : 'invalid'
+  return 'ok'
 }
 
 export async function sessionPassport(req: VercelRequest): Promise<Passport | null> {
   const raw = req.headers.cookie || ''
   const m = raw.match(new RegExp('(?:^|; )' + COOKIE + '=([a-z0-9-]+\\.)?([a-f0-9]+)'))
   if (!m) return null
-  if (!m[1]) return process.env.PASSPORT_PIN && same(m[2], legacyToken()) ? { id: HOME, name: 'The Gugus' } : null
-  const id = m[1].slice(0, -1)
+  const id = m[1] ? m[1].slice(0, -1) : HOME
   const c = await credential(id)
-  return c && same(m[2], sign(id, c.cred)) ? { id, name: c.name } : null
+  if (!c) return null
+  if (!m[1]) return same(m[2], legacyToken()) ? c.p : null
+  return same(m[2], sign(id, c.cred)) ? c.p : null
 }
 
 export async function setSession(res: VercelResponse, p: Passport | null) {

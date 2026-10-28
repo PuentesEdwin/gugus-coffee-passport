@@ -28,7 +28,7 @@ Each friend gets their own passport: a passport name + an 8-digit PIN, their own
 ```bash
 node scripts/new-passport.mjs ana "Ana's Coffee Club"
 ```
-It prints the PIN to hand over and an `insert` to run in Supabase → SQL Editor. Running it again for the same name gives a new PIN (and signs their devices out).
+It prints the PIN to hand over and an `insert` to run in Supabase → SQL Editor. Friends can change their passport name (the one typed on the cover) in Settings; their pages, photos and PIN stay the same.
 `node --experimental-strip-types scripts/check-palettes.mjs` checks the colors keep readable contrast.
 
 ## Where things are

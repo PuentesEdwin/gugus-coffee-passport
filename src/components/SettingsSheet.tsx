@@ -1,21 +1,40 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Entry, Settings } from '../types'
-import { photoSrc, type Mode, type Store } from '../lib/storage'
+import { changeLogin, photoSrc, toLogin, type Mode, type PassportInfo, type Store } from '../lib/storage'
 import { compressImage } from '../lib/image'
 import { applyPalette, paletteVars, PALETTES } from '../data/palettes'
 import { Icon } from './art'
 
-export default function SettingsSheet({ settings, entries, mode, store, onClose, onSave, onLock }: {
+export default function SettingsSheet({ settings, entries, mode, store, passport, onLoginChanged, onClose, onSave, onLock }: {
   settings: Settings
   entries: Entry[]
   mode: Mode
   store: Store
+  passport: PassportInfo | null
+  onLoginChanged: (login: string) => void
   onClose: () => void
   onSave: (s: Settings) => Promise<void>
   onLock: () => void
 }) {
   const [s, setS] = useState<Settings>(settings)
   const [busy, setBusy] = useState('')
+  const [login, setLogin] = useState(passport?.login || '')
+  const [loginErr, setLoginErr] = useState('')
+
+  async function save() {
+    const wanted = toLogin(login)
+    if (passport && wanted !== passport.login) {
+      const err = await changeLogin(wanted)
+      if (err) {
+        setLoginErr(err)
+        document.getElementById('s-login')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        return
+      }
+      onLoginChanged(wanted)
+    }
+    await onSave(s)
+    onClose()
+  }
   const coverRef = useRef<HTMLInputElement>(null)
 
   // Preview the colors while choosing; closing without saving puts the saved ones back.
@@ -60,6 +79,29 @@ export default function SettingsSheet({ settings, entries, mode, store, onClose,
         <div className="sheet-body settings">
           <label htmlFor="s-couple">Name on the cover</label>
           <input id="s-couple" className="input" value={s.coupleName} onChange={(e) => setS({ ...s, coupleName: e.target.value })} />
+          {passport && (
+            <>
+              <label htmlFor="s-login">Passport name (to sign in)</label>
+              <input
+                id="s-login"
+                className="input"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                value={login}
+                onChange={(e) => {
+                  setLogin(e.target.value)
+                  setLoginErr('')
+                }}
+              />
+              <p style={{ fontSize: 12, color: loginErr ? 'var(--terracotta)' : 'var(--ink-soft)', margin: '4px 0 0' }} role={loginErr ? 'alert' : undefined}>
+                {loginErr ||
+                  (toLogin(login) && toLogin(login) !== passport.login
+                    ? `You'll sign in as “${toLogin(login)}”. Your PIN stays the same.`
+                    : 'Type this on the cover with your PIN.')}
+              </p>
+            </>
+          )}
           <label htmlFor="s-a">Your name</label>
           <input id="s-a" className="input" value={s.names[0]} onChange={(e) => setS({ ...s, names: [e.target.value, s.names[1]] })} />
           <label htmlFor="s-b">Coffee buddy (optional)</label>
@@ -101,12 +143,12 @@ export default function SettingsSheet({ settings, entries, mode, store, onClose,
           </div>
 
           <div style={{ display: 'flex', gap: 8, marginTop: 16, flexWrap: 'wrap' }}>
-            <button className="btn primary" disabled={busy.startsWith('Uploading')} onClick={() => onSave(s).then(onClose)}>Save</button>
+            <button className="btn primary" disabled={busy.startsWith('Uploading')} onClick={save}>Save</button>
             <button className="btn ghost" onClick={backup}>Download a backup</button>
             {mode === 'cloud' && <button className="btn ghost" onClick={onLock}>Sign out of this passport</button>}
           </div>
           <p style={{ fontSize: 12, color: 'var(--ink-soft)', marginTop: 16 }}>
-            {mode === 'cloud' ? 'Shared mode: both phones see the same passport. Pull the app back to the foreground to refresh.' : 'Preview mode: pages are kept only in this browser.'}
+            {mode === 'cloud' ? 'Shared mode: every phone signed in to this passport sees the same pages. Pull the app back to the foreground to refresh.' : 'Preview mode: pages are kept only in this browser.'}
           </p>
         </div>
       </div>

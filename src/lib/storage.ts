@@ -8,7 +8,14 @@ export interface Status {
   mode: Mode
   authed: boolean
   /** Which passport this device is signed in to (shared mode) */
-  passport?: { id: string; name: string } | null
+  passport?: PassportInfo | null
+}
+
+export interface PassportInfo {
+  id: string
+  name: string
+  /** The name typed on the cover to sign in */
+  login: string
 }
 
 /** Cloud mode exists when the /api functions are deployed and configured (Vercel + Supabase). */
@@ -32,6 +39,21 @@ export async function login(user: string, pin: string): Promise<boolean> {
   })
   return r.ok
 }
+
+/** Renames the passport name used to sign in. Returns an error message, or '' when it worked. */
+export async function changeLogin(login: string): Promise<string> {
+  try {
+    await api('/api/account', { method: 'PUT', body: JSON.stringify({ login }) })
+    return ''
+  } catch (e) {
+    const m = (e as Error).message
+    return m.includes('taken') ? 'Someone already uses that passport name. Try another one.' : 'Use 2–32 letters, numbers or dashes.'
+  }
+}
+
+/** Lowercase, no accents, dashes instead of spaces: "José María" becomes "jose-maria". */
+export const toLogin = (s: string) =>
+  s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 32)
 
 /** What the closed cover shows on this device before anyone signs in. */
 export interface CoverLook {
@@ -74,7 +96,7 @@ async function api<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 export interface Store {
-  load(): Promise<{ entries: Entry[]; settings: Settings }>
+  load(): Promise<{ entries: Entry[]; settings: Settings; passport?: PassportInfo }>
   saveEntry(e: Entry): Promise<void>
   deleteEntry(id: string): Promise<void>
   saveSettings(s: Settings): Promise<void>
@@ -112,8 +134,8 @@ export const localStore: Store = {
 
 export const cloudStore: Store = {
   async load() {
-    const j = await api<{ entries: Entry[]; settings: Settings | null }>('/api/entries')
-    return { entries: j.entries, settings: j.settings || DEFAULT_SETTINGS }
+    const j = await api<{ entries: Entry[]; settings: Settings | null; passport: PassportInfo }>('/api/entries')
+    return { entries: j.entries, settings: j.settings || DEFAULT_SETTINGS, passport: j.passport }
   },
   async saveEntry(e) {
     await api('/api/entries', { method: 'PUT', body: JSON.stringify({ entry: e }) })

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Entry, Settings } from './types'
 import { DEFAULT_SETTINGS } from './types'
-import { cloudStore, getStatus, localStore, logout, readLook, rememberLook, type Mode, type Store } from './lib/storage'
+import { cloudStore, getStatus, localStore, logout, readLook, rememberLook, type Mode, type PassportInfo, type Store } from './lib/storage'
 import { applyPalette } from './data/palettes'
 import { buildPages } from './lib/pages'
 import { CAFES } from './data/cafes'
@@ -40,6 +40,7 @@ export default function App() {
   const [pageKey, setPageKey] = useState<string>(CAFES[0].id)
   const [editing, setEditing] = useState<Entry | null>(null)
   const [showSettings, setShowSettings] = useState(false)
+  const [passport, setPassport] = useState<PassportInfo | null>(null)
   const [toast, setToast] = useState<string | null>(null)
   const [celebrate, setCelebrate] = useState<Entry | null>(null)
 
@@ -61,6 +62,7 @@ export default function App() {
       const d = await store.load()
       setEntries(d.entries)
       setSettings(d.settings)
+      setPassport(d.passport || null)
       rememberLook({ palette: d.settings.palette, coverPhoto: d.settings.coverPhoto, coupleName: d.settings.coupleName })
     } catch (e) {
       if ((e as Error).message === 'locked') {
@@ -220,6 +222,11 @@ export default function App() {
           entries={entries || []}
           mode={mode}
           store={store}
+          passport={passport}
+          onLoginChanged={(login) => {
+            setPassport((p) => (p ? { ...p, login } : p))
+            rememberLook({ user: login })
+          }}
           onClose={() => setShowSettings(false)}
           onSave={saveSettings}
           onLock={async () => {
