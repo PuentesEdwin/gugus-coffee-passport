@@ -199,9 +199,9 @@ export function Emblem() {
     <svg className="emblem" viewBox="0 0 200 200" aria-hidden>
       <defs>
         <linearGradient id="goldg" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f4e2a6" />
-          <stop offset=".5" stopColor="#c9a54a" />
-          <stop offset="1" stopColor="#e9cf87" />
+          <stop offset="0" style={{ stopColor: 'var(--metal-hi)' }} />
+          <stop offset=".5" style={{ stopColor: 'var(--gold)' }} />
+          <stop offset="1" style={{ stopColor: 'var(--gold-2)' }} />
         </linearGradient>
       </defs>
       <circle cx="100" cy="100" r="92" fill="none" stroke={gold} strokeWidth="2" />
@@ -240,7 +240,7 @@ export function Emblem() {
         <path d="M108 104 c-6 -8 6 -12 0 -22" />
       </g>
       {/* bean on the cup */}
-      <ellipse cx="95" cy="128" rx="6" ry="8.5" fill="#3b4822" transform="rotate(-25 95 128)" />
+      <ellipse cx="95" cy="128" rx="6" ry="8.5" style={{ fill: 'var(--olive-800)' }} transform="rotate(-25 95 128)" />
       <path d="M97 120 c-5 5 -1 8 -4 16" stroke={gold} strokeWidth="1.4" fill="none" />
     </svg>
   )

@@ -36,8 +36,13 @@ export interface Entry {
 }
 
 export interface Settings {
+  /** The second name may be empty: a friend's passport can be for one person. */
   names: [string, string]
   coupleName: string
+  /** Key from src/data/palettes.ts */
+  palette?: string
+  /** Photo on the cover, stored like the page photos */
+  coverPhoto?: string
 }
 
 export const DEFAULT_SETTINGS: Settings = { names: ['Edwin', 'Stefany'], coupleName: 'The Gugus' }

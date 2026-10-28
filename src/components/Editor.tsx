@@ -24,7 +24,7 @@ export function newEntry(cafe: Cafe | undefined, s: Settings): Entry {
     rating: 0,
     price: '',
     notes: '',
-    filledBy: [...s.names],
+    filledBy: s.names.filter(Boolean),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   }
@@ -193,7 +193,7 @@ export default function Editor({ entry, isNew, settings, store, onCancel, onSave
           <div className="step-block">
             <div className="head"><span className="n">7</span><div><b>Filled by</b></div></div>
             <div className="chips">
-              {settings.names.map((n) => (
+              {settings.names.filter(Boolean).map((n) => (
                 <button type="button" key={n} className={'chip' + (e.filledBy.includes(n) ? ' on' : '')} onClick={() => up({ filledBy: e.filledBy.includes(n) ? e.filledBy.filter((x) => x !== n) : [...e.filledBy, n] })}>{n}</button>
               ))}
             </div>

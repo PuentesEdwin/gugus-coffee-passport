@@ -1,11 +1,14 @@
 import { useState } from 'react'
 import type { Settings } from '../types'
-import { login } from '../lib/storage'
+import { login, photoSrc, readLook, rememberLook } from '../lib/storage'
 import { Emblem } from './art'
 
 export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { settings: Settings; needsPin: boolean; onUnlocked: () => void; onOpen: () => void }) {
   const [opening, setOpening] = useState(false)
+  const [user, setUser] = useState(() => readLook().user || '')
   const [pin, setPin] = useState('')
+  const [photoOk, setPhotoOk] = useState(true)
+  const cover = photoSrc(settings.coverPhoto)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
   const [shake, setShake] = useState(false)
@@ -16,16 +19,19 @@ export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { sett
   }
 
   async function submit(p = pin) {
+    const u = user.trim().toLowerCase()
+    if (!u) return setErr('Type your passport name first.')
     if (!p || busy) return
     setBusy(true)
     setErr('')
-    const ok = await login(p)
+    const ok = await login(u, p)
     setBusy(false)
     if (ok) {
+      rememberLook({ user: u })
       onUnlocked()
       open()
     } else {
-      setErr('That PIN doesn’t match. Try again.')
+      setErr('That passport name and PIN don’t match. Try again.')
       setPin('')
       setShake(true)
       setTimeout(() => setShake(false), 450)
@@ -45,7 +51,13 @@ export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { sett
           <h1 className="gold">COFFEE<br />PASSPORT</h1>
           <div className="city gold">NEW YORK CITY</div>
         </div>
-        <Emblem />
+        {cover && photoOk ? (
+          <div className="cover-photo">
+            <img src={cover} alt="" onError={() => setPhotoOk(false)} />
+          </div>
+        ) : (
+          <Emblem />
+        )}
         <div className="couple gold">{settings.coupleName}</div>
         {needsPin ? (
           <form
@@ -55,6 +67,18 @@ export default function Cover({ settings, needsPin, onUnlocked, onOpen }: { sett
               submit()
             }}
           >
+            <label className="sr-only" htmlFor="pp-user">Passport name</label>
+            <input
+              id="pp-user"
+              className="cover-user"
+              placeholder="passport name"
+              autoCapitalize="none"
+              autoCorrect="off"
+              spellCheck={false}
+              autoComplete="username"
+              value={user}
+              onChange={(e) => setUser(e.target.value)}
+            />
             <label className="sr-only" htmlFor="pin">PIN</label>
             <input id="pin" className="sr-only" inputMode="numeric" autoComplete="current-password" type="password" value={pin} onChange={(e) => setPin(e.target.value)} />
             <div className="pin-dots" aria-hidden>

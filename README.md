@@ -21,7 +21,15 @@ npm run dev        # http://localhost:5173, preview mode: data stays in this bro
    - `SESSION_SECRET` – optional, any long random text
 5. Deploy. Open the URL on both phones, type the PIN, and use **Share → Add to Home Screen** so it opens like an app.
 
-Changing `PASSPORT_PIN` logs every device out.
+Changing `PASSPORT_PIN` logs every device out. On the cover, the Gugus passport signs in as `gugus`.
+
+## Passports for friends
+Each friend gets their own passport: a passport name + an 8-digit PIN, their own pages and photos, a cover photo and one of 10 color combinations (Settings).
+```bash
+node scripts/new-passport.mjs ana "Ana's Coffee Club"
+```
+It prints the PIN to hand over and an `insert` to run in Supabase → SQL Editor. Running it again for the same name gives a new PIN (and signs their devices out).
+`node --experimental-strip-types scripts/check-palettes.mjs` checks the colors keep readable contrast.
 
 ## Where things are
 - `src/data/cafes.ts` – the 30 suggested cafés (checked Oct 2026; edit freely)

@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Entry, Settings } from './types'
 import { DEFAULT_SETTINGS } from './types'
-import { cloudStore, getStatus, localStore, logout, type Mode, type Store } from './lib/storage'
+import { cloudStore, getStatus, localStore, logout, readLook, rememberLook, type Mode, type Store } from './lib/storage'
+import { applyPalette } from './data/palettes'
 import { buildPages } from './lib/pages'
 import { CAFES } from './data/cafes'
 import Cover from './components/Cover'
@@ -30,7 +31,11 @@ export default function App() {
   const [authed, setAuthed] = useState(false)
   const [open, setOpen] = useState(false)
   const [entries, setEntries] = useState<Entry[] | null>(null)
-  const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
+  // Until the passport loads, the cover wears what this device saw last time.
+  const [settings, setSettings] = useState<Settings>(() => {
+    const l = readLook()
+    return { ...DEFAULT_SETTINGS, coupleName: l.coupleName || '', palette: l.palette, coverPhoto: l.coverPhoto }
+  })
   const [view, setView] = useState<View>('passport')
   const [pageKey, setPageKey] = useState<string>(CAFES[0].id)
   const [editing, setEditing] = useState<Entry | null>(null)
@@ -39,6 +44,10 @@ export default function App() {
   const [celebrate, setCelebrate] = useState<Entry | null>(null)
 
   const store: Store = mode === 'cloud' ? cloudStore : localStore
+
+  useEffect(() => {
+    applyPalette(settings.palette)
+  }, [settings.palette])
 
   useEffect(() => {
     getStatus().then((s) => {
@@ -52,6 +61,7 @@ export default function App() {
       const d = await store.load()
       setEntries(d.entries)
       setSettings(d.settings)
+      rememberLook({ palette: d.settings.palette, coverPhoto: d.settings.coverPhoto, coupleName: d.settings.coupleName })
     } catch (e) {
       if ((e as Error).message === 'locked') {
         setAuthed(false)
@@ -102,6 +112,7 @@ export default function App() {
   async function saveSettings(s: Settings) {
     await store.saveSettings(s)
     setSettings(s)
+    rememberLook({ palette: s.palette, coverPhoto: s.coverPhoto, coupleName: s.coupleName })
     flash('Saved')
   }
 
@@ -125,9 +136,9 @@ export default function App() {
         <header className="topbar leather">
           <button className="brand" style={{ border: 0, background: 'none', color: 'inherit', padding: 0, textAlign: 'left' }} onClick={() => setOpen(false)} aria-label="Close passport">
             <svg width="34" height="34" viewBox="0 0 64 64" aria-hidden>
-              <rect width="64" height="64" rx="14" fill="#3b4822" />
-              <path d="M16 26h28v10a14 14 0 0 1-28 0z" fill="#d9b76a" />
-              <path d="M44 29h4a5 5 0 0 1 0 10h-5" fill="none" stroke="#d9b76a" strokeWidth="3" />
+              <rect width="64" height="64" rx="14" style={{ fill: 'var(--olive-800)' }} />
+              <path d="M16 26h28v10a14 14 0 0 1-28 0z" style={{ fill: 'var(--gold-2)' }} />
+              <path d="M44 29h4a5 5 0 0 1 0 10h-5" fill="none" style={{ stroke: 'var(--gold-2)' }} strokeWidth="3" />
               <path d="M24 12c-2 4 2 6 0 10M32 12c-2 4 2 6 0 10" stroke="#f3ead6" strokeWidth="2.5" fill="none" strokeLinecap="round" />
             </svg>
             <span>
@@ -208,10 +219,12 @@ export default function App() {
           settings={settings}
           entries={entries || []}
           mode={mode}
+          store={store}
           onClose={() => setShowSettings(false)}
           onSave={saveSettings}
           onLock={async () => {
             await logout()
+            setEntries(null)
             setAuthed(false)
             setOpen(false)
             setShowSettings(false)

@@ -32,7 +32,7 @@ export default function Stats({ entries, settings, onOpen }: { entries: Entry[];
     { icon: '🏆', name: 'Halfway', how: '15 of the 30 suggested', ok: suggested.size >= 15 },
     { icon: '👑', name: 'Passport complete', how: 'All 30 suggested', ok: suggested.size >= 30 },
   ]
-  const who = settings.names.map((n) => ({ n, c: entries.filter((e) => e.filledBy.includes(n)).length }))
+  const who = settings.names.filter(Boolean).map((n) => ({ n, c: entries.filter((e) => e.filledBy.includes(n)).length }))
 
   return (
     <section>

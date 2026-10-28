@@ -7,6 +7,8 @@ export type Mode = 'local' | 'cloud'
 export interface Status {
   mode: Mode
   authed: boolean
+  /** Which passport this device is signed in to (shared mode) */
+  passport?: { id: string; name: string } | null
 }
 
 /** Cloud mode exists when the /api functions are deployed and configured (Vercel + Supabase). */
@@ -15,20 +17,43 @@ export async function getStatus(): Promise<Status> {
     const r = await fetch('/api/status', { credentials: 'same-origin' })
     if (!r.ok || !(r.headers.get('content-type') || '').includes('json')) throw new Error()
     const j = await r.json()
-    if (j.cloud) return { mode: 'cloud', authed: !!j.authed }
+    if (j.cloud) return { mode: 'cloud', authed: !!j.authed, passport: j.passport }
   } catch {
     /* no server: local mode */
   }
   return { mode: 'local', authed: true }
 }
 
-export async function login(pin: string): Promise<boolean> {
+export async function login(user: string, pin: string): Promise<boolean> {
   const r = await fetch('/api/login', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ pin }),
+    body: JSON.stringify({ user, pin }),
   })
   return r.ok
+}
+
+/** What the closed cover shows on this device before anyone signs in. */
+export interface CoverLook {
+  user?: string
+  palette?: string
+  coverPhoto?: string
+  coupleName?: string
+}
+const LOOK = 'cp-cover'
+export function readLook(): CoverLook {
+  try {
+    return JSON.parse(localStorage.getItem(LOOK) || '{}')
+  } catch {
+    return {}
+  }
+}
+export function rememberLook(l: CoverLook) {
+  try {
+    localStorage.setItem(LOOK, JSON.stringify({ ...readLook(), ...l }))
+  } catch {
+    /* private window */
+  }
 }
 
 export async function logout(): Promise<void> {
