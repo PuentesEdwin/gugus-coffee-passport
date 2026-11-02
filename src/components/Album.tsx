@@ -38,7 +38,7 @@ export default function Album({ entries, onOpen, onAdd }: { entries: Entry[]; on
             {list.map((e) => {
               const t = (hash(e.id) * 6 - 3).toFixed(1)
               const store = photoSrc(e.photoStore)
-              const coffee = photoSrc(e.photoCoffee)
+              const coffee = photoSrc(e.photoCoffee) || photoSrc(e.photoArt)
               const main = store || coffee
               const inset = store && coffee ? coffee : undefined
               return (

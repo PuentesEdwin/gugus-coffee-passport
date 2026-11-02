@@ -47,7 +47,7 @@ export default function Editor({ entry, isNew, settings, store, onCancel, onSave
   const suggested = e.cafeId ? CAFES.find((c) => c.id === e.cafeId) : undefined
   const scale = BITTER_SCALE[e.bitterness - 1]
 
-  async function pickPhoto(field: 'photoStore' | 'photoCoffee', file?: File) {
+  async function pickPhoto(field: 'photoStore' | 'photoCoffee' | 'photoArt', file?: File) {
     if (!file) return
     try {
       setBusy('Preparing photo…')
@@ -65,7 +65,7 @@ export default function Editor({ entry, isNew, settings, store, onCancel, onSave
     setErr('')
     try {
       const out = { ...e, cafeName: e.cafeName.trim(), drink: e.drink.trim() || drinkByKey(e.drinkType).name, updatedAt: Date.now() }
-      for (const f of ['photoStore', 'photoCoffee'] as const) {
+      for (const f of ['photoStore', 'photoCoffee', 'photoArt'] as const) {
         if (out[f]?.startsWith('data:')) {
           setBusy('Uploading photos…')
           out[f] = await store.savePhoto(out[f]!)
@@ -113,16 +113,17 @@ export default function Editor({ entry, isNew, settings, store, onCancel, onSave
 
           {/* 2. photos */}
           <div className="step-block">
-            <div className="head"><span className="n">2</span><div><b>Two photos</b><br /><span>The storefront from outside, and your coffee or the beans they use</span></div></div>
-            <div className="polaroids" style={{ marginTop: 6 }}>
+            <div className="head"><span className="n">2</span><div><b>Three photos</b><br /><span>The storefront from outside, your coffee or the beans they use, and the coffee art as a keepsake</span></div></div>
+            <div className="polaroids three" style={{ marginTop: 6 }}>
               {(
                 [
                   ['photoStore', 'The storefront'],
                   ['photoCoffee', 'Coffee / beans'],
+                  ['photoArt', 'Coffee Art'],
                 ] as const
               ).map(([f, label], i) => (
                 <label key={f} className="upload">
-                  <figure className={'polaroid' + (e[f] ? '' : ' empty')} style={{ margin: 0, ['--tilt' as string]: i ? '2deg' : '-2deg' }}>
+                  <figure className={'polaroid' + (e[f] ? '' : ' empty')} style={{ margin: 0, ['--tilt' as string]: ['-2deg', '2deg', '-1deg'][i] }}>
                     <div className="ph">
                       {e[f] ? <img src={photoSrc(e[f])} alt={label} /> : <>{Icon.camera()}<span>Tap to add<br />{label.toLowerCase()}</span></>}
                     </div>

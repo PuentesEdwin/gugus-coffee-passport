@@ -158,9 +158,10 @@ function PageSpread({ page, dir, settings, onFill, onEdit, onTouchStart, onTouch
             <div className="info-card"><span className="k">Why go</span>{cafe.why}</div>
           </>
         )}
-        <div className="polaroids">
+        <div className="polaroids three">
           <Polaroid src={photoSrc(visit?.photoStore)} label="The storefront" tilt={tilt(-3)} />
           <Polaroid src={photoSrc(visit?.photoCoffee)} label="Our coffee" tilt={tilt(2.5)} />
+          <Polaroid src={photoSrc(visit?.photoArt)} label="Coffee Art" tilt={tilt(-1.5)} />
         </div>
       </div>
 

@@ -32,7 +32,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const id = String(req.query.id || '')
     if (!id || id === SETTINGS_ID) return res.status(400).json({ error: 'Missing id' })
     const { data } = await sb.from(TABLE).select('data').eq('passport_id', p.id).eq('id', id).maybeSingle()
-    const photos = [data?.data?.photoStore, data?.data?.photoCoffee]
+    const photos = [data?.data?.photoStore, data?.data?.photoCoffee, data?.data?.photoArt]
       .filter((x): x is string => typeof x === 'string' && x.startsWith('cloud:'))
       .map((x) => x.slice(6))
       .filter((x) => ownsPhoto(p, x))

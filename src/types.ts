@@ -30,6 +30,8 @@ export interface Entry {
   /** data: URL (local mode) or "cloud:<path>" (shared mode) */
   photoStore?: string
   photoCoffee?: string
+  /** Third photo: the latte art, kept as a memory of the café */
+  photoArt?: string
   filledBy: string[]
   createdAt: number
   updatedAt: number

@@ -1,6 +1,6 @@
 # Gugus Coffee Passport · New York City
 
-A private coffee passport for two: 30 suggested NYC cafés plus blank pages for your own finds. Each page has two photos (storefront + your coffee/beans), the drink, a 1–5 bean bitterness scale, stars, price and handwritten-style notes. Saved pages get a rubber stamp and show up in the photo album, the borough stamps, the stats and the badges. "Coffee 101" explains every drink with a cup cross-section.
+A private coffee passport for two: 30 suggested NYC cafés plus blank pages for your own finds. Each page has three photos (storefront, your coffee/beans and the Coffee Art keepsake), the drink, a 1–5 bean bitterness scale, stars, price and handwritten-style notes. Saved pages get a rubber stamp and show up in the photo album, the borough stamps, the stats and the badges. "Coffee 101" explains every drink with a cup cross-section.
 
 Stack: Vite + React + TypeScript, Vercel Functions in `/api`, Supabase (Postgres + private Storage bucket).
 

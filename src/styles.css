@@ -337,6 +337,8 @@ img { display: block; max-width: 100%; }
 .info-card + .info-card { margin-top: 8px; }
 
 .polaroids { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; }
+/* the third photo (Coffee Art) sits centered under the first two */
+.polaroids.three > :nth-child(3) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 7px); }
 .polaroid {
   position: relative;
   background: #fff;
